@@ -1,5 +1,4 @@
 import axios from "axios";
-import { localStorage } from "local-storage";
 
 export const userRegister = user => {
   return dispatch => {
@@ -18,9 +17,6 @@ export const userRegister = user => {
       })
       .catch(err => {
         if (err) {
-          // Here you should have logic to handle invalid creation of a user.
-          // This assumes your Rails API will return a JSON object with a key of
-          // 'message' if there is an error with creating the user, i.e. invalid username
           console.log(err.message);
           return reject(err);
         }
@@ -54,7 +50,6 @@ export const getProfile = () => {
 };
 
 export const userLogin = user => {
-  console.log("userLogin", user);
   return dispatch => {
     return axios
       .post("http://localhost:5000/auth/sign-in", user, {
@@ -64,7 +59,6 @@ export const userLogin = user => {
         }
       })
       .then(res => {
-        // console.log(res);
         window.localStorage.setItem("token", res.data.token);
         dispatch(userSignIn(res.data.user));
       })

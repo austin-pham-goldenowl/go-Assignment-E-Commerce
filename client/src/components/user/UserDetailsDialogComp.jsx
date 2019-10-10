@@ -3,9 +3,6 @@ import React from "react";
 import _Button from "../common/_Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import _TextInput from "../common/_TextInput";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
-import Link from "@material-ui/core/Link";
 import Grid from "@material-ui/core/Grid";
 import GamepadIcon from "@material-ui/icons/Gamepad";
 import _Typography from "../common/_Typography";
@@ -23,7 +20,7 @@ const useStyles = makeStyles(theme => ({
     }
   },
   paper: {
-    marginTop: theme.spacing(8),
+    marginTop: theme.spacing(3),
     display: "flex",
     flexDirection: "column",
     alignItems: "center"
@@ -33,23 +30,28 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.secondary.main
   },
   form: {
-    width: "100%", // Fix IE 11 issue.
+    width: "100%",
     marginTop: theme.spacing(3)
   },
   submit: {
-    margin: theme.spacing(3, 0, 2)
+    margin: theme.spacing(1, 0, 1)
   }
 }));
 
-const UserDetailsDialogComp = ({ currentUser }) => {
+const UserDetailsDialogComp = ({ currentUser, userUpdate, onChange }) => {
   const classes = useStyles();
 
   const [edit, setEdit] = React.useState(false);
 
   return (
     <div>
-      <Container component="main" maxWidth="xs">
+      <Container className={classes.paper} component="main" maxWidth="xs">
         <CssBaseline />
+        <br />
+        <center>
+          <GamepadIcon />
+          <_Typography variant="h5">User Information</_Typography>
+        </center>
         <form className={classes.form} noValidate>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
@@ -63,6 +65,7 @@ const UserDetailsDialogComp = ({ currentUser }) => {
                 id="firstName"
                 label="First Name"
                 value={currentUser.firstName}
+                onChange={onChange}
                 autoFocus
               />
             </Grid>
@@ -77,6 +80,7 @@ const UserDetailsDialogComp = ({ currentUser }) => {
                 value={currentUser.lastName}
                 name="lastName"
                 autoComplete="lname"
+                onChange={onChange}
               />
             </Grid>
             <Grid item xs={12}>
@@ -90,19 +94,7 @@ const UserDetailsDialogComp = ({ currentUser }) => {
                 value={currentUser.email}
                 name="email"
                 autoComplete="email"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <_TextInput
-                style={{ display: !edit && "none" }}
-                variant="outlined"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
+                onChange={onChange}
               />
             </Grid>
           </Grid>
@@ -112,12 +104,33 @@ const UserDetailsDialogComp = ({ currentUser }) => {
             variant="contained"
             color="primary"
             className={classes.submit}
+            onClick={
+              edit
+                ? e => {
+                    e.preventDefault();
+                    userUpdate(e);
+                    setEdit(!edit);
+                  }
+                : e => {
+                    e.preventDefault();
+                    setEdit(!edit);
+                  }
+            }
+          >
+            {edit ? "Update" : "Edit"}
+          </_Button>
+          <_Button
+            fullWidth
+            variant="contained"
+            color="primary"
+            className={classes.submit}
             onClick={e => {
               e.preventDefault();
               setEdit(!edit);
             }}
+            style={{ display: !edit && "none" }}
           >
-            {edit ? "Update" : "Edit"}
+            Cancel
           </_Button>
         </form>
       </Container>

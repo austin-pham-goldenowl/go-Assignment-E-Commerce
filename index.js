@@ -9,8 +9,8 @@ const router = jsonServer.router(path.resolve(__dirname, "./fake-db.json"));
 const middlewares = jsonServer.defaults();
 const SECRET_KEY = "JS_TEAM_PRO";
 const saltRounds = 10;
-const cors = require('cors')
- 
+const cors = require("cors");
+
 //khai bao protected routes
 const protectedRoutes = ["/profile", "/orders"];
 
@@ -70,7 +70,7 @@ const authenticationMiddleware = (req, res, next) => {
   }
 };
 
-server.use(cors())
+server.use(cors());
 server.use(middlewares);
 server.use(authenticationMiddleware);
 
@@ -207,14 +207,14 @@ server.put("/profile", (req, res, next) => {
     return;
   }
 
-  const { id, username, email } = req.body;
+  const { id, firstName, lastName, email } = req.body;
 
   const data = JSON.parse(fs.readFileSync("./fake-db.json"));
   const { users } = data;
 
   const userIndex = users.findIndex(user => user.id === id);
-  if (userIndex) {
-    users[userIndex] = { ...users[userIndex], username, email };
+  if (users[userIndex]) {
+    users[userIndex] = { ...users[userIndex], firstName, lastName, email };
     fs.writeFileSync("./fake-db.json", JSON.stringify(data));
   }
 
@@ -223,6 +223,42 @@ server.put("/profile", (req, res, next) => {
   res.json({
     user: users[userIndex]
   });
+});
+
+server.post("/orders", (req, res, next) => {
+  //from token-header
+  const user = { ...req.user };
+  if (!user) {
+    res.status(400);
+    res.json({
+      error: true,
+      message: "User is not found..."
+    });
+    return;
+  }
+
+  //from body
+  const { id, cartList, total } = req.body;
+  const createdAt = new Date().toISOString();
+
+  console.log(cartList);
+
+  const data = JSON.parse(fs.readFileSync("./fake-db.json"));
+  const { orders } = data;
+
+  const newOrder = {
+    id: orders.length + 1,
+    uid: id,
+    cartList,
+    total,
+    createdAt
+  };
+  orders.push(newOrder);
+
+  data.orders = [...orders];
+  fs.writeFileSync("./fake-db.json", JSON.stringify(data));
+
+  res.json({ order: newOrder });
 });
 
 server.use(router);

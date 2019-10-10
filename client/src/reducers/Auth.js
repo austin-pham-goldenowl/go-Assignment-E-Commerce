@@ -2,10 +2,9 @@ const initialState = {
   currentUser: null
 };
 
-export default function logIn(state = initialState, action) {
+export default function Auth(state = initialState, action) {
   switch (action.type) {
     case "USER_LOGIN":
-      console.log("r u",action.payload);
       return { ...state, currentUser: action.payload };
     case "USER_LOGOUT":
       window.localStorage.removeItem("token")

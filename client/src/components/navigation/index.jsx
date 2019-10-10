@@ -7,7 +7,6 @@ import _Button from "../common/_Button";
 import IconButton from "@material-ui/core/IconButton";
 import GamepadIcon from "@material-ui/icons/Gamepad";
 import CategoryDrawerComp from "./CategoryDrawerComp";
-import { withRouter } from "react-router-dom";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -72,20 +71,6 @@ const NavigationBar = ({
           />
           {children1}
           {children2}
-          {/* <LogInCont
-            isLoginSuccess={isLoginSuccess}
-            userLogin={userLogin}
-            userLogout={userLogout}
-            userRegister={userRegister}
-          />
-          {!isLoginSuccess ? (
-            <Register
-              isLoginSuccess={isLoginSuccess}
-              userRegister={userRegister}
-            />
-          ) : (
-            <UserDetailsDialogComp currentUser={isLoginSuccess} />
-          )} */}
         </Toolbar>
       </AppBar>
     </div>

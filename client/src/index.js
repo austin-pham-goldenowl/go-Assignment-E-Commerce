@@ -1,8 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
-import LogInCont from "./containers/LogInCont";
-import Register from "./containers/Register";
 import "./index.css";
 import * as serviceWorker from "./serviceWorker";
 import App from "./App";

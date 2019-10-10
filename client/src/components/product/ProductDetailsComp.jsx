@@ -23,7 +23,8 @@ const ProductDetailsComp = ({
   title,
   image,
   price,
-  description
+  description,
+  routeChange
 }) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
@@ -68,6 +69,7 @@ const ProductDetailsComp = ({
                 details={
                   <_Typography variant="body2">{description}</_Typography>
                 }
+                routeChange={routeChange}
               />
             </Grid>
           </Grid>

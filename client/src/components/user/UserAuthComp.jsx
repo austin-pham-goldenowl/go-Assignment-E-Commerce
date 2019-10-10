@@ -90,7 +90,7 @@ const UserAuthComp = ({ handleChange, onSubmit }) => {
             </_Button>
             <Grid container>
               <Grid item>
-                <_Link href="#" variant="body2">
+                <_Link href="/register" variant="body2">
                   {"Don't have an account? Sign Up"}
                 </_Link>
               </Grid>

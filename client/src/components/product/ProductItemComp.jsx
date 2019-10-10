@@ -42,7 +42,8 @@ const ProductItemComp = ({
   title,
   image,
   price,
-  addToCart
+  addToCart,
+  routeChange
 }) => {
   const classes = useStyles();
   const [quantity, setQuantity] = useState();
@@ -89,19 +90,18 @@ const ProductItemComp = ({
         </_CardContent>
         <_CardActions>
           <_Button
-            disabled={!isLoginSuccess}
             size="small"
             color="primary"
             style={{ float: "right" }}
             onClick={() =>
-              // typeof quantity === "undefined"
-              //   ? addToCart(title, 1, price)
-              !isNaN(parseInt(quantity))
-                ? quantity > 0 && addToCart(title, quantity, price)
-                : addToCart(title, 1, price)
+              isLoginSuccess
+                ? !isNaN(parseInt(quantity))
+                  ? quantity > 0 && addToCart(title, quantity, price)
+                  : addToCart(title, 1, price)
+                : routeChange("/login")
             }
           >
-            {isLoginSuccess ? "Add to Cart" : "Please Login"}
+            Add to Cart
           </_Button>
           {detailsButton}
           {closeButton}

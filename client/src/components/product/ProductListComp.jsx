@@ -48,7 +48,8 @@ const ProductListComp = ({
   itemPerPage,
   maxPage,
   pagination,
-  onPaginationClick
+  onPaginationClick,
+  routeChange
 }) => {
   const classes = useStyles();
 
@@ -88,8 +89,10 @@ const ProductListComp = ({
                           image={randomImage}
                           price={item.price}
                           description={item.des}
+                          routeChange={routeChange}
                         />
                       }
+                      routeChange={routeChange}
                     />
                   </Grid>
                 )
