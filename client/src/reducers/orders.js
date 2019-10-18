@@ -1,7 +1,7 @@
-//orders reducer
+// orders reducer
 const orders = (state = [], action) => {
   switch (action.type) {
-    //add order reducer
+    // add order reducer
     case "ADD_TO_CART": {
       let found = false;
       for (let i = 0; i < state.length; i++) {
@@ -18,7 +18,7 @@ const orders = (state = [], action) => {
           )
         : [
             ...state,
-            //return new state
+            // return new state
             {
               title: action.title,
               quantity: action.quantity,
@@ -26,13 +26,13 @@ const orders = (state = [], action) => {
               cost: action.cost
             }
           ];
-    }
-
-    //delete order reducer
+    } // delete order reducer
     case "DELETE_FROM_CART":
-      //return state with completed state reversed
+      // return state with completed state reversed
       return state.filter(order => order.title !== action.title);
-
+    case "DELETE_CART":
+      // return state with completed state reversed
+      return (state = []);
     default:
       return state;
   }

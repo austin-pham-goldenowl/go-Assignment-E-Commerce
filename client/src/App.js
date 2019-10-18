@@ -1,10 +1,9 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import "./App.css";
-import NavigationBar from "./components/navigation";
 import { connect } from "react-redux";
-import _Typography from "./components/common/_Typography";
 import axios from "axios";
+import NavigationBar from "./components/navigation";
 import {
   getProfile,
   userLogout,
@@ -12,10 +11,7 @@ import {
   userRegister
 } from "./actions/user";
 import NavButton from "./components/navigation/NavButton";
-import HomeRoute from "./routes/HomeRoute";
-import AuthRoute from "./routes/AuthRoute";
-import RegisterRoute from "./routes/RegisterRoute";
-import InfoRoute from "./routes/InfoRoute";
+import AppRoutes from "./routes";
 
 const ITEM_PER_PAGE = 6;
 const MAX_PAGE_SHOWN = 8;
@@ -65,18 +61,54 @@ class App extends Component {
     this.props.getProfile();
     axios
       .get("/products")
-      .then(res => this.setState({ products: res.data.products }))
+      .then(res =>
+        !this.props.isLoginSuccess || !this.props.currentUser.admin ?
+        this.setState({
+          products: res.data.products.filter(
+            product => product.deleted === false
+          )
+        }) 
+        : this.setState({
+          products: res.data.products
+        }) 
+      )
       .catch(err => console.log(err));
-
     axios
       .get("/categories")
       .then(res => this.setState({ categories: res.data.categories }))
       .catch(err => console.log(err));
   }
 
+  componentWillUnmount() {
+    this.setState({ products: [] });
+  }
   render() {
-    const { isLoginSuccess } = this.props;
-
+    const {
+      isLoginSuccess,
+      currentUser,
+      userLogin,
+      userRegister,
+      getProfile
+    } = this.props;
+    const { category, products, pagination } = this.state;
+    const { routeChange, onCategoryClick, onPaginationClick } = this;
+    const AppRoutesState = {
+      isLoginSuccess,
+      currentUser,
+      category,
+      products,
+      pagination,
+      itemPerPage: ITEM_PER_PAGE,
+      maxPage: MAX_PAGE_SHOWN
+    };
+    const AppRoutesAction = {
+      userLogin,
+      userRegister,
+      getProfile,
+      routeChange,
+      onCategoryClick,
+      onPaginationClick
+    };
     return (
       <div>
         <NavigationBar
@@ -107,50 +139,31 @@ class App extends Component {
               </NavButton>
             ) : (
               <NavButton onClick={() => this.routeChange("/info")}>
-                Hi, {isLoginSuccess.firstName}
+                Hi, {currentUser && currentUser.firstName}
+              </NavButton>
+            )
+          }
+          children3={
+            isLoginSuccess && (
+              <NavButton
+                style={{ display: "inline-block" }}
+                onClick={() => this.routeChange("/history")}
+              >
+                History
               </NavButton>
             )
           }
         />
-        <HomeRoute
-          isLoginSuccess={isLoginSuccess}
-          products={this.state.products}
-          productList={
-            this.state.category === -1
-              ? this.state.products
-              : this.state.products.filter(
-                  product => product.categoryId === this.state.category
-                )
-          }
-          category={this.state.category}
-          itemPerPage={ITEM_PER_PAGE}
-          maxPage={MAX_PAGE_SHOWN}
-          pagination={this.state.pagination}
-          onPaginationClick={this.onPaginationClick}
-          routeChange={this.routeChange}
-        />
-        <AuthRoute
-          isLoginSuccess={isLoginSuccess}
-          userLogin={this.props.userLogin}
-        />
-        <RegisterRoute
-          isLoginSuccess={isLoginSuccess}
-          userRegister={this.props.userRegister}
-        />
-        <InfoRoute
-          isLoginSuccess={isLoginSuccess}
-          getProfile={this.props.getProfile}
-        />
+        <AppRoutes state={AppRoutesState} action={AppRoutesAction} />
       </div>
     );
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    isLoginSuccess: state.Auth.currentUser
-  };
-};
+const mapStateToProps = state => ({
+  isLoginSuccess: !!window.localStorage.token,
+  currentUser: state.auth.currentUser
+});
 
 const mapDispatchToProps = dispatch => ({
   userRegister: user => dispatch(userRegister(user)),

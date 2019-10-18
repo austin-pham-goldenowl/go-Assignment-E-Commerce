@@ -1,28 +1,33 @@
 import { connect } from "react-redux";
-import { addToCart, deleteFromCart } from "../actions/order";
-import CartListComp from "../components/order/CartListComp";
 import React, { Component } from "react";
 import axios from "axios";
+import { addToCart, deleteFromCart, deleteCart } from "../actions/order";
+import CartListComp from "../components/order/CartListComp";
 import CreateOrderButton from "../components/order/CreateOrderButton";
 
 class CartListCont extends Component {
   onSubmit = total => {
-    const token = window.localStorage.token;
-    return axios.post(
-      "http://localhost:5000/orders",
-      {
-        id: this.props.uid,
-        cartList: this.props.orders,
-        total
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          Authorization: token
+    const { token } = window.localStorage;
+    return axios
+      .post(
+        "http://localhost:5000/orders",
+        {
+          id: this.props.uid,
+          cartList: this.props.orders,
+          total
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: token
+          }
         }
-      }
-    );
+      )
+      .then(res => {
+        this.props.deleteCart();
+      })
+      .catch(err => console.log(err));
   };
 
   render() {
@@ -52,6 +57,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   deleteFromCart: title => dispatch(deleteFromCart(title)),
+  deleteCart: () => dispatch(deleteCart()),
   onIncreaseClick: (title, quantity, price) =>
     dispatch(addToCart(title, quantity + 1, price)),
   onDecreaseClick: (title, quantity, price) =>

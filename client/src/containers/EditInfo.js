@@ -12,30 +12,33 @@ class EditInfo extends Component {
       email: this.props.currentUser.email
     };
   }
-
-  onSubmit = e => {
-    const token = window.localStorage.token;
-    console.log("token:", token);
+  onSubmit = async () => {
+    const { token } = window.localStorage;
     const { id, firstName, lastName, email } = this.state;
-    const putData = { id, firstName, lastName, email };
+    const putData = {
+      id,
+      firstName,
+      lastName,
+      email
+    };
     if (token) {
-      return axios
-        .put("http://localhost:5000/profile", putData, {
+      try {
+        const res = await axios.put("http://localhost:5000/profile", putData, {
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
             Authorization: token
           }
-        })
-        .then(res => {
-          this.props.getProfile();
-          this.setState({
-            firstName: res.data.user.firstName,
-            lastName: res.data.user.lastName,
-            email: res.data.user.email
-          });
-        })
-        .catch(err => console.log(err));
+        });
+        this.props.getProfile();
+        this.setState({
+          firstName: res.data.user.firstName,
+          lastName: res.data.user.lastName,
+          email: res.data.user.email
+        });
+      } catch (err) {
+        return console.log(err);
+      }
     }
   };
 

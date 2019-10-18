@@ -1,10 +1,15 @@
 import React, { Component } from "react";
-import UserRegisterComp from "../components/user/UserRegisterComp";
 
+import UserRegisterComp from "../components/user/UserRegisterComp";
 class Register extends Component {
   constructor(props) {
     super(props);
-    this.state = { firstName: "", lastName: "", email: "", password: "" };
+    this.state = {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: ""
+    };
   }
 
   onSubmit = e => {

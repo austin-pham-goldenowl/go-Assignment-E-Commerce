@@ -18,9 +18,9 @@ Web app page
  - [x] Logout 
  // Optional
  - [x] Create an order
- - [ ] Manage orders
-  + [ ] View list all orders created by current user
-  + [ ] View detail of an orders
+ - [x] Manage orders
+  + [x] View list all orders created by current user
+  + [x] View detail of an orders
  - [x] User's profile page
    + [x] View user's information
    + [x] Edit user's information
@@ -28,13 +28,13 @@ Web app page
 - 
 - Admin page
  - [ ] Manage products
-    + [ ] List all produts (must hav pagination)
+    + [ ] List all produts (must hav pagination) 
     + [ ] Create new product
     + [ ] Edit a product
     + [ ] Remove a product (soft delete)
  - [ ] Manage categories
     + [ ] List all category
-    + [ ] Create new category
+    + [ ] Create new category 
     + [ ] Edit category
     + [ ] Remove category (soft delete)
  - [ ] Manage order
