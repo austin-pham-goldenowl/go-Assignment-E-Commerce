@@ -10,7 +10,6 @@ import {
   userLogin,
   userRegister
 } from "./actions/user";
-import NavButton from "./components/navigation/NavButton";
 import AppRoutes from "./routes";
 
 const ITEM_PER_PAGE = 6;
@@ -57,20 +56,79 @@ class App extends Component {
     this.routeChange("/");
   };
 
+  onHomeClick = () => {
+    this.routeChange("/");
+    this.onCategoryClick(-1);
+  };
+
+  login = user => {
+    return new Promise(resolve => {
+      resolve();
+      this.props.userLogin(user);
+    })
+      .then(
+        axios
+          .get("/products")
+          .then(
+            res =>
+              this.props.currentUser.admin
+                ? this.setState({
+                    products: res.data.products
+                  })
+                : this.setState({
+                    products: res.data.products.filter(
+                      product => product.deleted === false
+                    )
+                  }),
+            this.onPaginationClick(0)
+          )
+          .catch(err => console.log(err))
+      )
+      .catch(err => console.log(err));
+  };
+
+  logout = () => {
+    return new Promise(resolve => {
+      resolve();
+      this.props.userLogout();
+    })
+      .then(
+        axios
+          .get("/products")
+          .then(
+            res =>
+              this.setState({
+                products: res.data.products.filter(
+                  product => product.deleted === false
+                )
+              }),
+            this.onPaginationClick(0)
+          )
+          .catch(err => console.log(err))
+      )
+      .catch(err => console.log(err));
+  };
+
   componentDidMount() {
     this.props.getProfile();
     axios
       .get("/products")
       .then(res =>
-        !this.props.isLoginSuccess || !this.props.currentUser.admin ?
-        this.setState({
-          products: res.data.products.filter(
-            product => product.deleted === false
-          )
-        }) 
-        : this.setState({
-          products: res.data.products
-        }) 
+        this.props.currentUser
+          ? this.props.currentUser.admin
+            ? this.setState({
+                products: res.data.products
+              })
+            : this.setState({
+                products: res.data.products.filter(
+                  product => product.deleted === false
+                )
+              })
+          : this.setState({
+              products: res.data.products.filter(
+                product => product.deleted === false
+              )
+            })
       )
       .catch(err => console.log(err));
     axios
@@ -79,82 +137,90 @@ class App extends Component {
       .catch(err => console.log(err));
   }
 
+  reloadProduct = () => {
+    axios
+      .get("/products")
+      .then(res =>
+        this.props.currentUser
+          ? this.props.currentUser.admin
+            ? this.setState({
+                products: res.data.products
+              })
+            : this.setState({
+                products: res.data.products.filter(
+                  product => product.deleted === false
+                )
+              })
+          : this.setState({
+              products: res.data.products.filter(
+                product => product.deleted === false
+              )
+            })
+      )
+      .catch(err => console.log(err));
+  };
+
+  reloadCategory = () => {
+    axios
+      .get("/categories")
+      .then(res => this.setState({ categories: res.data.categories }))
+      .then(console.log(`state`, this.state.categories))
+      .catch(err => console.log(err));
+  };
+
   componentWillUnmount() {
     this.setState({ products: [] });
   }
+
   render() {
     const {
       isLoginSuccess,
       currentUser,
-      userLogin,
       userRegister,
       getProfile
     } = this.props;
-    const { category, products, pagination } = this.state;
-    const { routeChange, onCategoryClick, onPaginationClick } = this;
-    const AppRoutesState = {
+
+    const { category, categories, products, pagination } = this.state;
+
+    const {
+      login,
+      logout,
+      routeChange,
+      onCategoryClick,
+      onHomeClick,
+      onPaginationClick,
+      reloadProduct,
+      reloadCategory
+    } = this;
+
+    const AppStates = {
       isLoginSuccess,
       currentUser,
       category,
+      categories,
       products,
       pagination,
       itemPerPage: ITEM_PER_PAGE,
       maxPage: MAX_PAGE_SHOWN
     };
-    const AppRoutesAction = {
-      userLogin,
+
+    const AppActions = {
+      login,
+      logout,
       userRegister,
       getProfile,
       routeChange,
       onCategoryClick,
-      onPaginationClick
+      onHomeClick,
+      onPaginationClick,
+      reloadProduct,
+      reloadCategory
     };
+
     return (
       <div>
-        <NavigationBar
-          categoryList={this.state.categories}
-          onDrawerClick={this.onCategoryClick}
-          onHomeClick={() => this.onCategoryClick(-1)}
-          history={this.props.history}
-          children1={
-            !isLoginSuccess ? (
-              <NavButton onClick={() => this.routeChange("/login")}>
-                Log In
-              </NavButton>
-            ) : (
-              <NavButton
-                onClick={() => {
-                  this.props.userLogout();
-                  this.routeChange("/");
-                }}
-              >
-                Log Out
-              </NavButton>
-            )
-          }
-          children2={
-            !isLoginSuccess ? (
-              <NavButton onClick={() => this.routeChange("/register")}>
-                Register
-              </NavButton>
-            ) : (
-              <NavButton onClick={() => this.routeChange("/info")}>
-                Hi, {currentUser && currentUser.firstName}
-              </NavButton>
-            )
-          }
-          children3={
-            isLoginSuccess && (
-              <NavButton
-                style={{ display: "inline-block" }}
-                onClick={() => this.routeChange("/history")}
-              >
-                History
-              </NavButton>
-            )
-          }
-        />
-        <AppRoutes state={AppRoutesState} action={AppRoutesAction} />
+        <NavigationBar states={AppStates} actions={AppActions} />
+        <AppRoutes state={AppStates} action={AppActions} />
       </div>
     );
   }

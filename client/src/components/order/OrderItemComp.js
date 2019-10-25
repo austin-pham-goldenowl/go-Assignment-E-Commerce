@@ -13,7 +13,7 @@ const OrderItemComp = ({ cart, onMouseOver }) => (
       <Grid item lg={6}>
         <center>
           <MyTypography variant="subtitle1">
-            Day created: {cart.createdAt.substring(0, 10)}
+            Day created: {cart.createdAt}
           </MyTypography>
         </center>
       </Grid>

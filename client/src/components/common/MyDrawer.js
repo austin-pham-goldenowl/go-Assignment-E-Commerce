@@ -14,6 +14,7 @@ const useStyles = makeStyles({
     width: "auto"
   }
 });
+
 const MyDrawer = ({ text, list, onClick, ...props }) => {
   const classes = useStyles();
   const [state, setState] = React.useState({

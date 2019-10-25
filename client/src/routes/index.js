@@ -4,6 +4,10 @@ import AuthRoute from "./AuthRoute";
 import RegisterRoute from "./RegisterRoute";
 import InfoRoute from "./InfoRoute";
 import HistoryRoute from "./HistoryRoute";
+import OrderManagementRoute from "./admin/OrderManagementRoute";
+import CategoryManagementRoute from "./admin/CategoryManagementRoute";
+import ProductManagementRoute from "./admin/ProductManagementRoute";
+
 
 const index = ({ state, action }) => (
   <React.Fragment>
@@ -27,7 +31,7 @@ const index = ({ state, action }) => (
     />
     <AuthRoute
       isLoginSuccess={state.isLoginSuccess}
-      userLogin={action.userLogin}
+      userLogin={action.login}
     />
     <RegisterRoute
       isLoginSuccess={state.isLoginSuccess}
@@ -38,7 +42,22 @@ const index = ({ state, action }) => (
       currentUser={state.currentUser}
       getProfile={action.getProfile}
     />
-    <HistoryRoute isLoginSuccess={state.isLoginSuccess} />
+    <HistoryRoute
+      isLoginSuccess={state.isLoginSuccess}
+      admin={state.currentUser && state.currentUser.admin}
+    />
+    <ProductManagementRoute
+      currentUser={state.currentUser}
+      categories={state.categories}
+      products={state.products}
+      reloadData={action.reloadProduct}
+    />
+    <OrderManagementRoute currentUser={state.currentUser} />
+    <CategoryManagementRoute
+      currentUser={state.currentUser}
+      categories={state.categories}
+      reloadData={action.reloadCategory}
+    />
   </React.Fragment>
 );
 

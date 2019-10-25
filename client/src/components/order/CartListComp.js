@@ -13,7 +13,7 @@ const CartListComp = ({
   onDecreaseClick,
   createOrder
 }) => (
-  <div style={{ marginRight: 5, marginTop: 5 }}>
+  <div style={{ margin: 5 }}>
     <center>
       {orders.map(order => (
         <div>

@@ -1,10 +1,10 @@
 import React from "react";
 import { Route, Redirect } from "react-router-dom";
-import OrderHistory from "../containers/OrderHistory";
+import History from "../containers/History";
 
-const HistoryRoute = ({ isLoginSuccess }) => (
+const HistoryRoute = ({ isLoginSuccess, admin }) => (
   <Route path="/history">
-    {isLoginSuccess ? <OrderHistory /> : <Redirect to="/login" />}
+    {isLoginSuccess ? !admin ? <History /> : <Redirect to="/" /> : <Redirect to="/login" />}
   </Route>
 );
 

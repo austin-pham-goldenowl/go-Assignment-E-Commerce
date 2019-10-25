@@ -2,7 +2,7 @@ import React from "react";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
-import ProductItemCont from "../../containers/ProductItemCont";
+import ProductItem from "../../containers/ProductItem";
 import MyDialog from "../common/MyDialog";
 import MyTypography from "../common/MyTypography";
 import MyButton from "../common/MyButton";
@@ -47,7 +47,7 @@ const ProductDetailsComp = ({
         <Container className={classes.cardGrid} maxWidth="sm">
           <Grid container spacing={4}>
             <Grid>
-              <ProductItemCont
+              <ProductItem
                 isLoginSuccess={isLoginSuccess}
                 title={title}
                 image={image}

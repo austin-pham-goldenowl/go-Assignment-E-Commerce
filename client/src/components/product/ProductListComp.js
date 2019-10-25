@@ -4,7 +4,7 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import ProductItemComp from "../../containers/ProductItemCont";
+import ProductItemComp from "../../containers/ProductItem";
 import MyPagination from "../common/MyPagination";
 import ProductDetailsComp from "./ProductDetailsComp";
 

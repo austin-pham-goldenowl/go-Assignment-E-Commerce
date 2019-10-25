@@ -15,8 +15,7 @@ Web app page
    + [x] Remove an item from cart
    + [x] Increase/Decrease number of items in cart
  - [x] Sign In / Sign Up
- - [x] Logout 
- // Optional
+ - [x] Logout // Optional
  - [x] Create an order
  - [x] Manage orders
   + [x] View list all orders created by current user
@@ -27,23 +26,22 @@ Web app page
 - 
 - 
 - Admin page
- - [ ] Manage products
-    + [ ] List all produts (must hav pagination) 
-    + [ ] Create new product
-    + [ ] Edit a product
-    + [ ] Remove a product (soft delete)
- - [ ] Manage categories
-    + [ ] List all category
-    + [ ] Create new category 
-    + [ ] Edit category
-    + [ ] Remove category (soft delete)
- - [ ] Manage order
-    + [ ] List all order
-    + [ ] View order detail (Customer information/List selected products/Total price/Promotion if existed)m
-    + [ ] Manage order status (New - Order is created/Delevering - Order is delivering to customer/Delivered - Order is delivered to customer)
-    + [ ] Mange payment status of an order (Unpaid/Paid)
-    + [ ] Accept an order
-    + [ ] Reject an order
+ - [x] Manage products
+    + [x] List all produts (must hav pagination) 
+    + [x] Create new product
+    + [x] Edit a product
+    + [x] Remove a product (soft delete)
+ - [x] Manage categories
+    + [x] List all category
+    + [x] Create new category 
+    + [x] Edit category
+    + [x] Remove category (soft delete)
+ - [x] Manage order
+    + [x] List all order
+    + [x] View order detail (Customer information/List selected products/Total price/Promotion if existed)
+    + [x] Manage order status (New - Order is created/Delevering - Order is delivering to customer/Delivered - Order is delivered to customer)
+    + [x] Mange payment status of an order (Unpaid/Paid)
+    + [x] Accept/Reject an order
    - 
    - 
  - [ ] Manage Users (optional)

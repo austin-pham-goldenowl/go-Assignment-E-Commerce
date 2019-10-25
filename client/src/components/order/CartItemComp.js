@@ -5,7 +5,7 @@ import MyTypography from "../common/MyTypography";
 import Box from "@material-ui/core/Box";
 
 const CartItemComp = ({ title, cartItemNumber, cartItemRemove }) => (
-  <Paper>
+  <Paper style={{ backgroundColor: "#F2F3F4" }}>
     <Box display="flex">
       <Box flexGrow={1}>
         <Grid container>

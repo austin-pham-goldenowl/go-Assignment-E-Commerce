@@ -7,6 +7,9 @@ import GamepadIcon from "@material-ui/icons/Gamepad";
 import MyTypography from "../common/MyTypography";
 import MyButton from "../common/MyButton";
 import CategoryDrawerComp from "./CategoryDrawerComp";
+import AuthButton from "./AuthButton";
+import UserButton from "./UserButton";
+import MenuButton from "./MenuButton";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -20,15 +23,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const NavigationBar = ({
-  categoryList,
-  onDrawerClick,
-  onHomeClick,
-  history,
-  children1,
-  children2,
-  children3
-}) => {
+const NavigationBar = ({ states, actions }) => {
   const classes = useStyles();
   return (
     <div className={classes.root}>
@@ -39,39 +34,40 @@ const NavigationBar = ({
             className={classes.menuButton}
             color="inherit"
             aria-label="menu"
-            onClick={() => {
-              history.push("/");
-              onHomeClick();
-            }}
+            onClick={actions.onHomeClick}
           >
             <GamepadIcon />
           </IconButton>
           <MyTypography
             variant="h6"
             className={classes.title}
-            onClick={() => {
-              history.push("/");
-              onHomeClick();
-            }}
+            onClick={actions.onHomeClick}
           >
             eShop
           </MyTypography>
-          <MyButton
-            color="inherit"
-            onClick={() => {
-              history.push("/");
-              onHomeClick();
-            }}
-          >
+          <MyButton color="inherit" onClick={actions.onHomeClick}>
             Home
           </MyButton>
           <CategoryDrawerComp
-            categoryList={categoryList}
-            onClick={onDrawerClick}
+            categoryList={states.categories.filter(
+              category => category.deleted === false
+            )}
+            onClick={actions.onCategoryClick}
           />
-          {children1}
-          {children2}
-          {children3}
+          <AuthButton
+            isLoginSuccess={states.isLoginSuccess}
+            routeChange={actions.routeChange}
+            logout={actions.logout}
+          />
+          <UserButton
+            isLoginSuccess={states.isLoginSuccess}
+            currentUser={states.currentUser}
+            routeChange={actions.routeChange}
+          />
+          <MenuButton
+            currentUser={states.currentUser}
+            routeChange={actions.routeChange}
+          />
         </Toolbar>
       </AppBar>
     </div>

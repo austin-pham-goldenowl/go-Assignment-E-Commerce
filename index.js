@@ -1,3 +1,5 @@
+/* eslint-disable max-len */
+/* eslint-disable no-param-reassign */
 const jsonServer = require('json-server');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
@@ -13,7 +15,7 @@ const saltRounds = 10;
 const cors = require('cors');
 
 // khai bao protected routes
-const protectedRoutes = ['/profile', '/orders'];
+const protectedRoutes = ['/profile', '/orders', '/admin/orders', '/admin/products', '/admin/categories'];
 
 const authenticationMiddleware = (req, res, next) => {
   if (protectedRoutes.includes(req.url)) {
@@ -63,14 +65,14 @@ server.use(jsonServer.bodyParser);
 server.get('/', (req, res) => res.send('Please do not disturb'));
 
 server.get('/products', (req, res) => {
-  const products = router.db.get('products').value();
+  const { products } = JSON.parse(fs.readFileSync('./fake-db.json'));
   res.json({
     products: products || [],
   });
 });
 
 server.get('/categories', (req, res) => {
-  const categories = router.db.get('categories').value();
+  const { categories } = JSON.parse(fs.readFileSync('./fake-db.json'));
   res.json({
     categories: categories || [],
   });
@@ -88,7 +90,7 @@ server.post('/auth/sign-up', (req, res) => {
   const hashedPassword = bcrypt.hashSync(password, saltRounds);
   const accessKey = uuidv1();
   const token = jwt.sign({ accessKey }, SECRET_KEY);
-  const data = JSON.parse(fs.readFileSync('./fake-db.json')); // check if user is existed
+  const data = JSON.parse(fs.readFileSync('./fake-db.json'));
   const { users } = data;
   const existedUser = users.find((u) => u.email === email);
   if (existedUser) {
@@ -227,6 +229,9 @@ server.post('/orders', (req, res) => {
     cartList,
     total,
     createdAt,
+    status: 0,
+    paid: false,
+    dealed: 0,
   };
   orders.push(newOrder);
   data.orders = [...orders];
@@ -248,12 +253,292 @@ server.get('/orders', (req, res) => {
   const data = JSON.parse(fs.readFileSync('./fake-db.json'));
   const { orders } = data;
   const userOrders = orders.filter((order) => order.uid === user.id);
-  res.json({ order: userOrders });
+
+  userOrders.forEach((order) => {
+    order.createdAt = order.createdAt.substring(0, 10);
+  });
+  res.json({ orders: userOrders });
+});
+
+server.get('/admin/orders', (req, res) => {
+  // from token-header
+  const user = { ...req.user };
+  if (!user) {
+    res.status(400);
+    res.json({
+      error: true,
+      message: 'User is not found...',
+    });
+    return;
+  }
+
+  if (!user.admin) {
+    res.status(400);
+    res.json({
+      error: true,
+      message: 'User is not an admin...',
+    });
+    return;
+  }
+  const data = JSON.parse(fs.readFileSync('./fake-db.json'));
+  const { orders, users } = data;
+  orders.forEach((order) => {
+    order.createdAt = order.createdAt.substring(0, 10);
+  });
+
+  users.forEach((u) => {
+    delete u.firstName;
+    delete u.lastName;
+    delete u.password;
+    delete u.accessKey;
+    delete u.createdAt;
+    delete u.admin;
+  });
+  res.json({ orders, users });
+});
+
+server.put('/admin/orders', (req, res) => {
+  // from token-header
+  const user = { ...req.user };
+  if (!user) {
+    res.status(400);
+    res.json({
+      error: true,
+      message: 'User is not found...',
+    });
+    return;
+  }
+
+  if (!user.admin) {
+    res.status(401);
+    res.json({
+      error: true,
+      message: 'User is not an admin...',
+    });
+    return;
+  }
+
+  const {
+    id, status, paid, dealed,
+  } = req.body;
+  const data = JSON.parse(fs.readFileSync('./fake-db.json'));
+  const { orders } = data;
+  orders.forEach((order) => {
+    order.createdAt = order.createdAt.substring(0, 10);
+  });
+  const orderIndex = orders.findIndex((order) => order.id === id);
+  if (orders[orderIndex]) {
+    orders[orderIndex] = {
+      ...orders[orderIndex],
+      status,
+      paid,
+      dealed,
+    };
+    fs.writeFileSync('./fake-db.json', JSON.stringify(data));
+  }
+
+  res.json({
+    orders,
+  });
+});
+
+server.post('/admin/products', (req, res) => {
+  // from token-header
+  const user = { ...req.user };
+  if (!user) {
+    res.status(400);
+    res.json({
+      error: true,
+      message: 'User is not found...',
+    });
+    return;
+  }
+
+  if (!user.admin) {
+    res.status(401);
+    res.json({
+      error: true,
+      message: 'User is not an admin...',
+    });
+    return;
+  }
+
+  const {
+    name, categoryId, price, des,
+  } = req.body;
+  const data = JSON.parse(fs.readFileSync('./fake-db.json'));
+  const { products } = data;
+  const max = products.reduce((prev, current) => ((prev.id > current.id) ? prev : current));
+  const newProduct = {
+    id: max.id + 1,
+    name,
+    categoryId: +categoryId,
+    price: +price,
+    des,
+    url: '',
+    deleted: false,
+  };
+
+  products.push(newProduct);
+  data.products = [...products];
+  fs.writeFileSync('./fake-db.json', JSON.stringify(data));
+  res.json({
+    products,
+  });
+});
+
+server.put('/admin/products', (req, res) => {
+  // from token-header
+  const user = { ...req.user };
+  if (!user) {
+    res.status(400);
+    res.json({
+      error: true,
+      message: 'User is not found...',
+    });
+    return;
+  }
+
+  if (!user.admin) {
+    res.status(401);
+    res.json({
+      error: true,
+      message: 'User is not an admin...',
+    });
+    return;
+  }
+
+  const {
+    id, name, categoryId, price, des, url, deleted,
+  } = req.body;
+  const data = JSON.parse(fs.readFileSync('./fake-db.json'));
+  const { products } = data;
+
+  const productIndex = products.findIndex((product) => product.id === id);
+  if (products[productIndex]) {
+    products[productIndex] = {
+      ...products[productIndex],
+      name,
+      categoryId: +categoryId,
+      price: +price,
+      des,
+      url,
+      deleted,
+    };
+    fs.writeFileSync('./fake-db.json', JSON.stringify(data));
+  }
+
+  res.json({
+    products,
+  });
+});
+
+server.post('/admin/categories', (req, res) => {
+  // from token-header
+  const user = { ...req.user };
+  if (!user) {
+    res.status(400);
+    res.json({
+      error: true,
+      message: 'User is not found...',
+    });
+    return;
+  }
+
+  if (!user.admin) {
+    res.status(401);
+    res.json({
+      error: true,
+      message: 'User is not an admin...',
+    });
+    return;
+  }
+
+  const {
+    name,
+  } = req.body;
+  const data = JSON.parse(fs.readFileSync('./fake-db.json'));
+  const { categories } = data;
+  const max = categories.reduce((prev, current) => ((prev.id > current.id) ? prev : current));
+  const newCategory = {
+    id: +max.id + 1,
+    name,
+    deleted: false,
+  };
+
+  categories.push(newCategory);
+  data.products = [...categories];
+  fs.writeFileSync('./fake-db.json', JSON.stringify(data));
+  res.json({
+    categories,
+  });
+});
+
+server.put('/admin/categories', (req, res) => {
+  // from token-header
+  const user = { ...req.user };
+  if (!user) {
+    res.status(400);
+    res.json({
+      error: true,
+      message: 'User is not found...',
+    });
+    return;
+  }
+
+  if (!user.admin) {
+    res.status(401);
+    res.json({
+      error: true,
+      message: 'User is not an admin...',
+    });
+    return;
+  }
+
+  const {
+    id, name, deleted,
+  } = req.body;
+  const data = JSON.parse(fs.readFileSync('./fake-db.json'));
+  const { categories, products } = data;
+
+  const categoryIndex = categories.findIndex((cat) => cat.id === id);
+  
+  if (!categories[categoryIndex]) {
+    res.status(404);
+    res.json({
+      error: true,
+      message: 'Not found category',
+    });
+    return;
+  }
+
+  if (deleted) {
+    const productsByCategory = products.filter((product) => product.categoryId === id && !product.deleted);
+    if (productsByCategory.length) {
+      res.status(200);
+      res.json({
+        error: true,
+        message: 'Delete not allowed',
+      });
+      return;
+    }
+  }
+
+  categories[categoryIndex] = {
+    ...categories[categoryIndex],
+    name,
+    deleted,
+  };
+  fs.writeFileSync('./fake-db.json', JSON.stringify(data));
+
+  res.json({
+    categories,
+  });
 });
 
 server.use(router);
 
 server.listen(5000, () => {
   // eslint-disable-next-line no-console
-  console.log('App listening on port 5000');
+  console.log('Server listening on port 5000');
 });
